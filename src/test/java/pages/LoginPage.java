@@ -1,14 +1,16 @@
 package pages;
 
+import enums.Attribute;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import user.User;
 
 public class LoginPage extends BasePage {
 
-    private final By usernameFieldLocator = By.xpath("//input[@placeholder='Username']");
-    private final By passwordFieldLocator = By.xpath("//input[@placeholder='Password']");
-    private final By loginButtonLocator = By.xpath("//input[@data-test='login-button']");
-    private final By errorTextLocator = By.xpath("//h3[@data-test='error']");
+    private final By usernameFieldLocator = toBy(attributes.get(Attribute.PLACEHOLDER), "Username");
+    private final By passwordFieldLocator = toBy(attributes.get(Attribute.PLACEHOLDER), "Password");
+    private final By loginButtonLocator = toBy(attributes.get(Attribute.DATA_TEST), "login-button");
+    private final By errorTextLocator = toBy(attributes.get(Attribute.DATA_TEST), "error");
 
     public LoginPage(WebDriver driver) {
         super(driver);
@@ -18,9 +20,9 @@ public class LoginPage extends BasePage {
         driver.get(BASE_URL);
     }
 
-    public void login(String login, String password) {
-        driver.findElement(usernameFieldLocator).sendKeys(login);
-        driver.findElement(passwordFieldLocator).sendKeys(password);
+    public void login(User user) {
+        driver.findElement(usernameFieldLocator).sendKeys(user.login());
+        driver.findElement(passwordFieldLocator).sendKeys(user.password());
         driver.findElement(loginButtonLocator).click();
     }
 
@@ -28,7 +30,7 @@ public class LoginPage extends BasePage {
         return driver.findElement(errorTextLocator).getText();
     }
 
-    public boolean isErrorText() {
+    public boolean isErrorTextDisplayed() {
         return driver.findElement(errorTextLocator).isDisplayed();
     }
 }
