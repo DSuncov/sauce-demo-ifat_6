@@ -2,116 +2,89 @@ package tests;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import user.UserFactory;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class LoginTest extends BaseTest {
 
-    private static final String PASSWORD = "secret_sauce";
-    private static final String EMPTY_DATA_FOR_LOGIN_OR_PASSWORD = "";
-
     @DataProvider(name = "validLoginData")
     public Object[][] validLoginData() {
         return new Object[][] {
-                {"standard_user"},
-                {"problem_user"},
-                {"performance_glitch_user"},
-                {"error_user"},
-                {"visual_user"}
+                {"saucedemo.standard-user"},
+                {"saucedemo.problem-user"},
+                {"saucedemo.performance-glitch-user"},
+                {"saucedemo.error-user"},
+                {"saucedemo.visual-user"}
         };
     }
 
     @DataProvider(name = "invalidLoginData")
     public Object[][] invalidLoginData() {
         return new Object[][] {
-                {"standard"},
-                {"locked_out"},
-                {"problem"},
-                {"performance"},
-                {"error"},
-                {"visual"}
-        };
-    }
-
-    @DataProvider(name = "lockedUsersData")
-    public Object[][] lockedUsersData() {
-        return new Object[][] {
-                {"locked_out_user"}
-        };
-    }
-
-    @DataProvider(name = "lockedUsersDataWithEmptyPassword")
-    public Object[][] lockedUsersDataWithEmptyPassword() {
-        return new Object[][] {
-                {"standard_user"},
-                {"problem_user"},
-                {"performance_glitch_user"},
-                {"error_user"},
-                {"visual_user"}
+                {"saucedemo.invalid.login.standard-user"},
+                {"saucedemo.invalid.login.problem-user"},
+                {"saucedemo.invalid.login.performance-glitch-user"},
+                {"saucedemo.invalid.login.error-user"},
+                {"saucedemo.invalid.login.visual-user"}
         };
     }
 
     @Test(description = "Проверка успешного ввода логинов и пароля.",
             dataProvider = "validLoginData")
-    public void loginAndPasswordAccepted(String login) {
+    public void loginAndPasswordAccepted(String loginPath) {
         loginPage.open();
-        loginPage.login(login, PASSWORD);
+        loginPage.login(UserFactory.createUser(loginPath, password));
 
         String actual = productsPage.getTextPage();
-        String expected = "Products";
 
-        assertEquals(actual, expected);
+        assertEquals(actual, "Products");
     }
 
     @Test(description = "Проверка ввода невалидного логина.",
             dataProvider = "invalidLoginData")
-    public void loginNotAccepted(String login) {
+    public void loginNotAccepted(String loginPath) {
         loginPage.open();
-        loginPage.login(login, PASSWORD);
+        loginPage.login(UserFactory.createUser(loginPath, password));
 
         String actual = loginPage.getErrorText();
-        String expected = "Epic sadface: Username and password do not match any user in this service";
 
-        assertEquals(actual, expected);
-        assertTrue(loginPage.isErrorText());
-    }
-
-    @Test(description = "Проверка ввода логина заблокированного пользователя.",
-            dataProvider = "lockedUsersData")
-    public void lockedUserNotAccepted(String login) {
-        loginPage.open();
-        loginPage.login(login, PASSWORD);
-
-        String actual = loginPage.getErrorText();
-        String expected = "Epic sadface: Sorry, this user has been locked out.";
-
-        assertEquals(actual, expected);
-        assertTrue(loginPage.isErrorText());
-    }
-
-    @Test(description = "Проверка ввода пустого логина.")
-    public void emptyLoginCheck() {
-        loginPage.open();
-        loginPage.login(EMPTY_DATA_FOR_LOGIN_OR_PASSWORD, PASSWORD);
-
-        String actual = loginPage.getErrorText();
-        String expected = "Epic sadface: Username is required";
-
-        assertEquals(actual, expected);
-        assertTrue(loginPage.isErrorText());
+        assertEquals(actual, "Epic sadface: Username and password do not match any user in this service");
+        assertTrue(loginPage.isErrorTextDisplayed());
     }
 
     @Test(description = "Проверка ввода валидного логина с пустым паролем.",
-            dataProvider = "lockedUsersDataWithEmptyPassword")
-    public void emptyPasswordCheck(String login) {
+            dataProvider = "validLoginData")
+    public void emptyPasswordCheck(String loginPath) {
         loginPage.open();
-        loginPage.login(login, EMPTY_DATA_FOR_LOGIN_OR_PASSWORD);
+        loginPage.login(UserFactory.withEmptyPassword(loginPath));
 
         String actual = loginPage.getErrorText();
-        String expected = "Epic sadface: Password is required";
 
-        assertEquals(actual, expected);
-        assertTrue(loginPage.isErrorText());
+        assertEquals(actual, "Epic sadface: Password is required");
+        assertTrue(loginPage.isErrorTextDisplayed());
+    }
+
+    @Test(description = "Проверка ввода заблокированного логина.")
+    public void lockedUserCheck() {
+        loginPage.open();
+        loginPage.login(UserFactory.lockedUser(password));
+
+        String actual = loginPage.getErrorText();
+
+        assertEquals(actual, "Epic sadface: Sorry, this user has been locked out.");
+        assertTrue(loginPage.isErrorTextDisplayed());
+    }
+
+    @Test(description = "Проверка ввода пустого логина.")
+    public void emptyUserCheck() {
+        loginPage.open();
+        loginPage.login(UserFactory.withEmptyLogin(password));
+
+        String actual = loginPage.getErrorText();
+
+        assertEquals(actual, "Epic sadface: Username is required");
+        assertTrue(loginPage.isErrorTextDisplayed());
     }
 }
