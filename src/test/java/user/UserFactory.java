@@ -30,4 +30,11 @@ public class UserFactory {
                 password
         );
     }
+
+    public static User withInvalidPassword(String loginPath) {
+        return new User(
+                PropertyReader.getProperty(loginPath),
+                PropertyReader.getProperty("saucedemo.invalid.password")
+        );
+    }
 }

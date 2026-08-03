@@ -1,18 +1,17 @@
 package tests;
 
 import org.testng.annotations.Test;
-import user.UserFactory;
 import utils.CommonDataProviders;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static user.UserFactory.createUser;
 
 public class CartTest extends BaseTest {
 
     @Test(dataProvider = "validLoginDataForCartAndProducts", dataProviderClass = CommonDataProviders.class)
     public void checkGoodsAdded(String loginPath) {
-        loginPage.open();
-        loginPage.login(UserFactory.createUser(loginPath, password));
+        loginPage.open().login(createUser(loginPath, password));
 
         goods.forEach(productsPage::addToCart);
 
