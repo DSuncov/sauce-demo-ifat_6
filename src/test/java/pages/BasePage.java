@@ -15,19 +15,20 @@ import java.util.stream.Collectors;
 public class BasePage {
 
     protected static final String BASE_URL = PropertyReader.getProperty("saucedemo.url");
-    protected static final String PATTERN = "//*[@%s='%s']";
+    protected static final String XPATH_PATTERN = "//*[@%s='%s']";
     protected final Map<Attribute, String> attributes = fillMap();
+    private static final long WAIT = 5;
 
     protected WebDriver driver;
     protected WebDriverWait wait;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT));
     }
 
-    protected By toBy(String attribute, String text) {
-        return By.xpath(PATTERN.formatted(attribute, text));
+    protected By toByXpath(String attribute, String text) {
+        return By.xpath(XPATH_PATTERN.formatted(attribute, text));
     }
 
     private Map<Attribute, String> fillMap() {
