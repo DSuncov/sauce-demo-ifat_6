@@ -1,7 +1,10 @@
 package tests;
 
+import io.qameta.allure.*;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import user.User;
+import utils.PropertyReader;
 
 import static enums.ErrorMessage.*;
 import static enums.PageTitle.PRODUCTS;
@@ -9,6 +12,9 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static user.UserFactory.*;
 
+@Epic("Интернет-магазин.")
+@Feature("Авторизация.")
+@Owner("Dmitrii Suntsov")
 public class LoginTest extends BaseTest {
 
     @DataProvider(name = "validLoginData")
@@ -33,66 +39,111 @@ public class LoginTest extends BaseTest {
         };
     }
 
-    @Test(description = "Проверка успешного ввода логинов и пароля.",
+    @Story("Успешная авторизация.")
+    @Severity(SeverityLevel.BLOCKER)
+    @TmsLink("sauce-demo-ifat_6")
+    @Issue("sauce-demo-ifat_6")
+    @Description("Тестовый метод выполняет проверку входа на сайт. Вводятся валидные логин и пароль. " +
+            "Авторизация должна успешно выполниться и открыться страница товаров.")
+    @Test(description = "Проверяет успешный вход на страницу товаров.",
             dataProvider = "validLoginData")
     public void loginAndPasswordAccepted(String loginPath) {
-        loginPage.open().login(createUser(loginPath, password));
+        loginPage
+                .open()
+                .enterLogin(PropertyReader.getProperty(loginPath))
+                .enterPassword(password)
+                .submit();
 
-        String actual = productsPage.getTextPage();
-
-        assertEquals(actual, PRODUCTS.getValue());
+        assertEquals(productsPage.getTextPage(), PRODUCTS.getTitle());
     }
 
-    @Test(description = "Проверка ввода невалидного логина.",
+    @Story("Неудачная авторизация с невалидным логином.")
+    @TmsLink("sauce-demo-ifat_6")
+    @Issue("sauce-demo-ifat_6")
+    @Description("Тестовый метод выполняет проверку входа на сайт. Вводятся невалидный логин и валидный пароль. " +
+            "Авторизация не должна выполниться. Должно появиться сообщение об ошибке.")
+    @Test(description = "Проверяет наличие сообщения об ошибке при попытке входа с невалидным логином.",
             dataProvider = "invalidLoginData")
     public void loginNotAccepted(String loginPath) {
-        loginPage.open().login(createUser(loginPath, password));
+        loginPage
+                .open()
+                .enterLogin(PropertyReader.getProperty(loginPath))
+                .enterPassword(password)
+                .submit();
 
-        String actual = loginPage.getErrorText();
-
-        assertEquals(actual, INVALID_LOGIN_OR_PASSWORD.getValue());
+        assertEquals(loginPage.getErrorText(), INVALID_LOGIN_OR_PASSWORD.getMessage());
         assertTrue(loginPage.isErrorTextDisplayed());
     }
 
-    @Test(description = "Проверка ввода валидного логина с пустым паролем.",
+    @Story("Неудачная авторизация с пустым паролем.")
+    @TmsLink("sauce-demo-ifat_6")
+    @Issue("sauce-demo-ifat_6")
+    @Description("Тестовый метод выполняет проверку входа на сайт. Вводятся валидный логин и пустой пароль. " +
+            "Авторизация не должна выполниться. Должно появиться сообщение об ошибке.")
+    @Test(description = "Проверяет наличие сообщения об ошибке при попытке входа с пустым паролем.",
             dataProvider = "validLoginData")
     public void emptyPasswordCheck(String loginPath) {
-        loginPage.open().login(withEmptyPassword(loginPath));
+        loginPage
+                .open()
+                .enterLogin(PropertyReader.getProperty(loginPath))
+                .submit();
 
-        String actual = loginPage.getErrorText();
-
-        assertEquals(actual, PASSWORD_REQUIRED.getValue());
+        assertEquals(loginPage.getErrorText(), PASSWORD_REQUIRED.getMessage());
         assertTrue(loginPage.isErrorTextDisplayed());
     }
 
-    @Test(description = "Проверка ввода валидного логина с невалидным паролем паролем.",
+    @Story("Неудачная авторизация с невалидным паролем.")
+    @TmsLink("sauce-demo-ifat_6")
+    @Issue("sauce-demo-ifat_6")
+    @Description("Тестовый метод выполняет проверку входа на сайт. Вводятся валидный логин и невалидный пароль. " +
+            "Авторизация не должна выполниться. Должно появиться сообщение об ошибке.")
+    @Test(description = "Проверяет наличие сообщения об ошибке при попытке входа с невалидным паролем.",
             dataProvider = "validLoginData")
     public void invalidPasswordCheck(String loginPath) {
-        loginPage.open().login(withInvalidPassword(loginPath));
+        User testUser = withInvalidPassword(loginPath);
 
-        String actual = loginPage.getErrorText();
+        loginPage
+                .open()
+                .enterLogin(testUser.login())
+                .enterPassword(testUser.password())
+                .submit();
 
-        assertEquals(actual, INVALID_LOGIN_OR_PASSWORD.getValue());
+        assertEquals(loginPage.getErrorText(), INVALID_LOGIN_OR_PASSWORD.getMessage());
         assertTrue(loginPage.isErrorTextDisplayed());
     }
 
-    @Test(description = "Проверка ввода заблокированного логина.")
+    @Story("Неудачная авторизация с заблокированным логином.")
+    @TmsLink("sauce-demo-ifat_6")
+    @Issue("sauce-demo-ifat_6")
+    @Description("Тестовый метод выполняет проверку входа на сайт. Вводятся заблокированный логин и валидный пароль. " +
+            "Авторизация не должна выполниться. Должно появиться сообщение об ошибке.")
+    @Test(description = "Проверяет наличие сообщения об ошибке при попытке входа с заблокированным логином.")
     public void lockedUserCheck() {
-        loginPage.open().login(lockedUser(password));
+        User testUser = lockedUser();
 
-        String actual = loginPage.getErrorText();
+        loginPage
+                .open()
+                .enterLogin(testUser.login())
+                .enterPassword(testUser.password())
+                .submit();
 
-        assertEquals(actual, LOCKED_USER.getValue());
+        assertEquals(loginPage.getErrorText(), LOCKED_USER.getMessage());
         assertTrue(loginPage.isErrorTextDisplayed());
     }
 
-    @Test(description = "Проверка ввода пустого логина.")
+    @Story("Неудачная авторизация с пустым логином.")
+    @TmsLink("sauce-demo-ifat_6")
+    @Issue("sauce-demo-ifat_6")
+    @Description("Тестовый метод выполняет проверку входа на сайт. Вводятся пустой логин и валидный пароль. " +
+            "Авторизация не должна выполниться. Должно появиться сообщение об ошибке.")
+    @Test(description = "Проверяет наличие сообщения об ошибке при попытке входа с пустым логином.")
     public void emptyUserCheck() {
-        loginPage.open().login(withEmptyLogin(password));
+        loginPage
+                .open()
+                .enterPassword(password)
+                .submit();
 
-        String actual = loginPage.getErrorText();
-
-        assertEquals(actual, USERNAME_REQUIRED.getValue());
+        assertEquals(loginPage.getErrorText(), USERNAME_REQUIRED.getMessage());
         assertTrue(loginPage.isErrorTextDisplayed());
     }
 }

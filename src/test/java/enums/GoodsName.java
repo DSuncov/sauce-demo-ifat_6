@@ -1,5 +1,10 @@
 package enums;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum GoodsName {
     BOLT_T_SHIRT("Sauce Labs Bolt T-Shirt"),
     BACKPACK("Sauce Labs Backpack"),
@@ -8,13 +13,5 @@ public enum GoodsName {
     ONESIE("Sauce Labs Onesie"),
     T_SHIRT_RED("Test.allTheThings() T-Shirt (Red)");
 
-    private final String value;
-
-    GoodsName(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
+    private final String name;
 }

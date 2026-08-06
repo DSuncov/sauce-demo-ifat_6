@@ -2,23 +2,24 @@ package tests;
 
 import enums.GoodsName;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.qameta.allure.Step;
+import io.qameta.allure.testng.AllureTestNg;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
+import org.testng.ITestContext;
+import org.testng.annotations.*;
 import pages.CartPage;
 import pages.LoginPage;
 import pages.ProductsPage;
 import utils.PropertyReader;
+import utils.TestListener;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
+@Listeners({AllureTestNg.class, TestListener.class})
 public class BaseTest {
 
     protected WebDriver driver;
@@ -28,11 +29,9 @@ public class BaseTest {
     protected String password = PropertyReader.getProperty("saucedemo.password");;
     protected List<String> goods = fillList();
 
-    private static final long WAIT = 7;
-
     @Parameters({"browser"})
     @BeforeMethod
-    public void setUp(@Optional("edge") String browser) {
+    public void setUp(@Optional("edge") String browser, ITestContext context) {
         if (browser.equalsIgnoreCase("edge")) {
             WebDriverManager.edgedriver().setup();
             EdgeOptions options = new EdgeOptions()
@@ -48,7 +47,7 @@ public class BaseTest {
             driver = new ChromeDriver();
         }
 
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(WAIT));
+        context.setAttribute("driver", driver);
 
         loginPage = new LoginPage(driver);
         productsPage = new ProductsPage(driver);
@@ -56,6 +55,7 @@ public class BaseTest {
     }
 
     @AfterMethod
+    @Step("Закрытие браузера.")
     public void quitDriver() {
         if (driver != null) {
             driver.quit();
@@ -64,7 +64,7 @@ public class BaseTest {
 
     private List<String> fillList() {
         return Arrays.stream(GoodsName.values())
-                .map(GoodsName::getValue)
+                .map(GoodsName::getName)
                 .toList();
     }
 }
