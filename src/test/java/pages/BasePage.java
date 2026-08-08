@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class BasePage {
 
     protected static final String BASE_URL = PropertyReader.getProperty("saucedemo.url");
-    protected static final String XPATH_PATTERN = "//*[@%s='%s']";
+    protected static final String PATTERN = "[%s='%s']";
     protected final Map<Attribute, String> attributes = fillMap();
     private static final long WAIT = 5;
 
@@ -27,14 +27,14 @@ public class BasePage {
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT));
     }
 
-    protected By toByXpath(String attribute, String text) {
-        return By.xpath(XPATH_PATTERN.formatted(attribute, text));
+    protected By toByCssSelector(String attribute, String text) {
+        return By.cssSelector(PATTERN.formatted(attribute, text));
     }
 
     private Map<Attribute, String> fillMap() {
         return Arrays.stream(Attribute.values()).collect(Collectors.toMap(
                         Function.identity(),
-                        Attribute::getValue
+                        Attribute::getAttribute
                 ));
     }
 }

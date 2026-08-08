@@ -1,17 +1,14 @@
 package enums;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum Attribute {
     DATA_TEST("data-test"),
     PLACEHOLDER("placeholder"),
     CLASS("class");
 
-    private final String value;
-
-    Attribute(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
+    private final String attribute;
 }

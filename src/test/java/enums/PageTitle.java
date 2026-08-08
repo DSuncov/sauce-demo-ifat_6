@@ -1,16 +1,13 @@
 package enums;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum PageTitle {
     PRODUCTS("Products"),
-    YOUR_CART("Your Cart");
+    CART("Your Cart");
 
-    private final String value;
-
-    PageTitle(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
+    private final String title;
 }
