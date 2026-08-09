@@ -20,22 +20,22 @@ public class LoginTest extends BaseTest {
     @DataProvider(name = "validLoginData")
     public Object[][] validLoginData() {
         return new Object[][] {
-                {"saucedemo.standard-user"},
-                {"saucedemo.problem-user"},
-                {"saucedemo.performance-glitch-user"},
-                {"saucedemo.error-user"},
-                {"saucedemo.visual-user"}
+                {"saucedemo.valid.login[0]"},
+                {"saucedemo.valid.login[2]"},
+                {"saucedemo.valid.login[3]"},
+                {"saucedemo.valid.login[4]"},
+                {"saucedemo.valid.login[5]"}
         };
     }
 
     @DataProvider(name = "invalidLoginData")
     public Object[][] invalidLoginData() {
         return new Object[][] {
-                {"saucedemo.invalid.login.standard-user"},
-                {"saucedemo.invalid.login.problem-user"},
-                {"saucedemo.invalid.login.performance-glitch-user"},
-                {"saucedemo.invalid.login.error-user"},
-                {"saucedemo.invalid.login.visual-user"}
+                {"saucedemo.invalid.login[0]"},
+                {"saucedemo.invalid.login[1]"},
+                {"saucedemo.invalid.login[2]"},
+                {"saucedemo.invalid.login[3]"},
+                {"saucedemo.invalid.login[4]"}
         };
     }
 
@@ -54,7 +54,7 @@ public class LoginTest extends BaseTest {
                 .enterPassword(password)
                 .submit();
 
-        assertEquals(productsPage.getTextPage(), PRODUCTS.getTitle());
+        assertEquals(productsPage.getText(), PRODUCTS.getTitle());
     }
 
     @Story("Неудачная авторизация с невалидным логином.")

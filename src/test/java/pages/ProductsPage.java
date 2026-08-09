@@ -12,40 +12,27 @@ public class ProductsPage extends BasePage {
             "[@class='inventory_item']//child::*[text()='Add to cart']";
 
     private final By counter = toByCssSelector(attributes.get(Attribute.DATA_TEST), "shopping-cart-badge");
-    private final By textPage = toByCssSelector(attributes.get(Attribute.DATA_TEST), "title");
     private final By cartLink = toByCssSelector(attributes.get(Attribute.DATA_TEST), "shopping-cart-link");
 
     public ProductsPage(WebDriver driver) {
         super(driver);
     }
 
-    @Step("Получение названия страницы товаров.")
-    public String getTextPage() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(textPage))
-                .getText();
-    }
-
-    @Step("Проверка отображения страницы с товарами.")
-    public boolean pageIsOpen() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(textPage))
-                .isDisplayed();
-    }
-
     @Step("Добавление товара в корзину.")
     public void addToCart(String nameProduct) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(textPage));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(pageTitle));
         driver.findElement(By.xpath(ADD_TO_CART.formatted(nameProduct))).click();
     }
 
     @Step("Проверка количества товаров в корзине.")
     public int checkCounterValue() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(textPage));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(pageTitle));
         return Integer.parseInt(driver.findElement(counter).getText());
     }
 
     @Step("Переход на страницу с корзиной товаров.")
     public void switchToCart() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(textPage));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(pageTitle));
         driver.findElement(cartLink).click();
     }
 }

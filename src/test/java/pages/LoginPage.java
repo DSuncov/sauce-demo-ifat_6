@@ -3,17 +3,15 @@ package pages;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static enums.Attribute.DATA_TEST;
 import static enums.Attribute.PLACEHOLDER;
 
 public class LoginPage extends BasePage {
 
-    private final By usernameFieldLocator = toByCssSelector(attributes.get(PLACEHOLDER), "Username");
-    private final By passwordFieldLocator = toByCssSelector(attributes.get(PLACEHOLDER), "Password");
-    private final By loginButtonLocator = toByCssSelector(attributes.get(DATA_TEST), "login-button");
-    private final By errorTextLocator = toByCssSelector(attributes.get(DATA_TEST), "error");
+    private final By usernameField = toByCssSelector(attributes.get(PLACEHOLDER), "Username");
+    private final By passwordField = toByCssSelector(attributes.get(PLACEHOLDER), "Password");
+    private final By loginButton = toByCssSelector(attributes.get(DATA_TEST), "login-button");
 
     public LoginPage(WebDriver driver) {
         super(driver);
@@ -27,31 +25,19 @@ public class LoginPage extends BasePage {
 
     @Step("Ввод логина: {login}")
     public LoginPage enterLogin(String login) {
-        driver.findElement(usernameFieldLocator).sendKeys(login);
+        driver.findElement(usernameField).sendKeys(login);
         return this;
     }
 
     @Step("Ввод пароля: {password}")
     public LoginPage enterPassword(String password) {
-        driver.findElement(passwordFieldLocator).sendKeys(password);
+        driver.findElement(passwordField).sendKeys(password);
         return this;
     }
 
     @Step("Выполнение входа. Нажатие на кнопку Login")
     public LoginPage submit() {
-        driver.findElement(loginButtonLocator).click();
+        driver.findElement(loginButton).click();
         return this;
-    }
-
-    @Step("Получение текста сообщения об ошибке.")
-    public String getErrorText() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(errorTextLocator))
-                .getText();
-    }
-
-    @Step("Проверка отображения сообщения об ошибке.")
-    public boolean isErrorTextDisplayed() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(errorTextLocator))
-                .isDisplayed();
     }
 }
