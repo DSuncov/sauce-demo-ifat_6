@@ -7,9 +7,9 @@ public class CommonDataProviders {
     @DataProvider(name = "validLoginDataForCartAndProducts")
     public Object[][] validLoginDataForCartAndProducts() {
         return new Object[][] {
-                {"saucedemo.standard-user"},
-                {"saucedemo.performance-glitch-user"},
-                {"saucedemo.visual-user"}
+                {"saucedemo.valid.login[0]"},
+                {"saucedemo.valid.login[3]"},
+                {"saucedemo.valid.login[5]"}
         };
     }
 }

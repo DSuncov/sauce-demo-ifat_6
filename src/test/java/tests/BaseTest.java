@@ -11,6 +11,7 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.testng.ITestContext;
 import org.testng.annotations.*;
 import pages.CartPage;
+import pages.CheckoutPage;
 import pages.LoginPage;
 import pages.ProductsPage;
 import utils.PropertyReader;
@@ -26,6 +27,7 @@ public class BaseTest {
     protected LoginPage loginPage;
     protected ProductsPage productsPage;
     protected CartPage cartPage;
+    protected CheckoutPage checkoutPage;
     protected String password = PropertyReader.getProperty("saucedemo.password");;
     protected List<String> goods = fillList();
 
@@ -35,9 +37,12 @@ public class BaseTest {
         if (browser.equalsIgnoreCase("edge")) {
             WebDriverManager.edgedriver().setup();
             EdgeOptions options = new EdgeOptions()
-                    .addArguments("start-maximized")
-                    .addArguments("headless")
-                    .addArguments("--guest");
+                    .addArguments("--start-maximized")
+                    .addArguments("--headless=new")
+                    .addArguments("--guest")
+                    .addArguments("--no-sandbox")
+                    .addArguments("--disable-dev-shm-usage")
+                    .addArguments("--disable-gpu");
 
             driver = new EdgeDriver(options);
         }
@@ -52,6 +57,7 @@ public class BaseTest {
         loginPage = new LoginPage(driver);
         productsPage = new ProductsPage(driver);
         cartPage = new CartPage(driver);
+        checkoutPage = new CheckoutPage(driver);
     }
 
     @AfterMethod
